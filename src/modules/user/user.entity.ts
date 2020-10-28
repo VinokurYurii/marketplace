@@ -1,39 +1,45 @@
 import { Entity, Column, Index } from 'typeorm';
-import { BaseEntity } from '../common/base-entity'
+import { Exclude } from 'class-transformer';
+
+import { BaseEntity } from '../../common/entities/base-entity'
 
 export enum UserRole {
   admin = 'admin',
   parent = 'parent',
-  businessOwner = 'businessOwner'
+  businessOwner = 'businessOwner',
 }
 
 @Entity()
 export class User extends BaseEntity {
+  static readonly userRoles = {
+    publicCreateAllowed: [UserRole.parent, UserRole.businessOwner],
+    all: Object.values(UserRole)
+  };
+
   @Column('simple-enum', { enum: UserRole, default: UserRole.parent })
   role: UserRole;
 
-  @Column({nullable: false, unique: true})
+  @Index()
+  @Column({ unique: true })
   email: string;
 
-  @Column({nullable: false})
+  @Column()
   firstName: string;
 
-  @Column({nullable: false})
+  @Column()
   lastName: string;
 
-  @Column({nullable: false, unique: true})
+  @Column()
   phone: string;
 
-  @Column({nullable: false})
-  birthDay: Date;
-
-  @Column({nullable: false, default: ''})
+  @Column()
+  @Exclude()
   password: string;
 
   @Index()
   @Column()
   mailConfirmationHashString: string;
 
-  @Column({nullable: false, default: false})
+  @Column({ default: false })
   mailConfirmed: boolean;
 }

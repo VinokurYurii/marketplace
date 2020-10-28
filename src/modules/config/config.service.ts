@@ -7,9 +7,13 @@ import * as dotenv from 'dotenv';
 
 import { PGConfigService } from './PGConfigService';
 import { IDBConfig } from './interfaces';
+import {ExtractJwt} from "passport-jwt";
 
 const ext = path.extname(__filename);
 const dbDir = path.relative(process.cwd(), path.resolve(`${__dirname}/../../db`));
+
+const AUTH_JWT_TOKEN_EXPIRES_IN = 'AUTH_JWT_TOKEN_EXPIRES_IN';
+const AUTH_JWT_SECRET = 'AUTH_JWT_SECRET';
 
 export interface IEnvConfig {
   [key: string]: any;
@@ -47,7 +51,6 @@ export class ConfigService {
   }
 
   getOrmConfig() {
-    console.log('${dbDir}/**/*.entity${ext} => ', `${__dirname}/../**/*.entity${ext}`);
     return <TypeOrmModuleOptions>{
       dropSchema: false,
 
@@ -65,5 +68,13 @@ export class ConfigService {
 
   getDatabaseSettings(): IDBConfig {
     return this.dataBaseService.getConfig(this);
+  }
+
+  getAuthJwtTokenExpiresIn(): number {
+    return +this.get<number>(AUTH_JWT_TOKEN_EXPIRES_IN);
+  }
+
+  getAuthJwtSecret(): string {
+    return this.get<string>(AUTH_JWT_SECRET);
   }
 }
