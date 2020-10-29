@@ -29,7 +29,7 @@ export class SignInDTO {
 
 export const SignInSchema = Joi.object().keys({
   email: Joi.string().email().required(),
-  password: Joi.string().min(8).max(16).required(),
+  password: Joi.string().min(8).max(50).required(),
   passwordConfirmation: Joi.string().valid(Joi.ref('password')).required().messages({
     'any.only': ValidationMessages.passwordConfirmation
   }),

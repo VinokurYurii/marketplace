@@ -29,7 +29,7 @@ export class ConfigService {
   constructor() {
     ConfigService.serviceInstance = this;
 
-    let envFileName = `${ConfigService.DEFAULT_NODE_ENV}.env`;
+    let envFileName = `.${ConfigService.DEFAULT_NODE_ENV}.env`;
     if (!fs.existsSync(envFileName))
       envFileName = '.env';
     // const settings = dotenv.parse(fs.readFileSync(envFileName)); // TODO: Add env settings validations later
@@ -46,8 +46,8 @@ export class ConfigService {
     return ConfigService.serviceInstance;
   }
 
-  get<T = string>(key: string): T {
-    return this.envFileConfig[key];
+  get<T = string>(key: string, defaultValue?: any): T {
+    return this.envFileConfig[key] === undefined ? defaultValue : this.envFileConfig[key];
   }
 
   getOrmConfig() {

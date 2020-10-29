@@ -11,5 +11,5 @@ export class LogInDTO {
 
 export const LogInSchema = Joi.object().keys({
   email: Joi.string().email().required(),
-  password: Joi.string().min(8).max(16).required(),
+  password: Joi.string().min(8).max(50).required(),
 });

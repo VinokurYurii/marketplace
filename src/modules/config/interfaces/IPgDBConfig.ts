@@ -6,4 +6,6 @@ export interface IPgDBConfig extends IDBConfig {
   database: string;
   username: string;
   password: string;
+  keepConnectionAlive: boolean;
+  dropDatabaseSchema: boolean;
 }

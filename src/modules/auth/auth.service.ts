@@ -17,7 +17,7 @@ export class AuthService {
     private jwtService: JwtService
   ) { }
 
-  signIn(userDto: SignInDTO) {
+  async signIn(userDto: SignInDTO) {
     const { passwordConfirmation, ...userData } = userDto;
     return this.userService.create(userData);
   }

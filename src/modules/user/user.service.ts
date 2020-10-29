@@ -16,7 +16,10 @@ export class UserService {
     userData.password = await this.hashString(userData.password, salt);
     userData.mailConfirmationHashString = await this.hashString(userData.email, salt);
 
-    return this.repo.save(this.repo.create(userData));
+    const newUser = await this.repo.save(this.repo.create(userData));
+    const { password, ...clearUser } = newUser;
+
+    return clearUser;
   }
 
   findByEmail(email: string) {

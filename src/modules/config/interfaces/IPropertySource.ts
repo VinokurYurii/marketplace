@@ -1,3 +1,3 @@
 export interface IPropertySource {
-  get<T>(key: string): T;
+  get<T>(key: string, defaultValue?: any): T;
 }
