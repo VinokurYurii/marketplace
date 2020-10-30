@@ -1,5 +1,6 @@
-import { Controller, Post,  Body, Get, Request, UseGuards } from '@nestjs/common';
+import { Controller, Post,  Body, Get, Request, UseGuards, Req } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 
 import { JoiValidationPipe } from '../../common/pipes/joi-validation-pipe'
 import { SignInDTO, SignInSchema } from './dto/signInDTO'
@@ -28,5 +29,15 @@ export class AuthController {
   test(@Request() req) {
     console.log('req.user  => ', req.user);
     return req.user;
+  }
+
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth(@Req() req) {}
+
+  @Get('google/redirect')
+  @UseGuards(AuthGuard('google'))
+  googleAuthRedirect(@Req() req) {
+    return this.service.googleLogin(req)
   }
 }

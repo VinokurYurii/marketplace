@@ -6,14 +6,17 @@ import * as fs from 'fs';
 import * as dotenv from 'dotenv';
 
 import { PGConfigService } from './PGConfigService';
-import { IDBConfig } from './interfaces';
-import {ExtractJwt} from "passport-jwt";
+import { IDBConfig, IGooglePassportConfig } from './interfaces';
+import { ExtractJwt } from "passport-jwt";
 
 const ext = path.extname(__filename);
 const dbDir = path.relative(process.cwd(), path.resolve(`${__dirname}/../../db`));
 
 const AUTH_JWT_TOKEN_EXPIRES_IN = 'AUTH_JWT_TOKEN_EXPIRES_IN';
 const AUTH_JWT_SECRET = 'AUTH_JWT_SECRET';
+const GOOGLE_CLIENT_ID = 'GOOGLE_CLIENT_ID';
+const GOOGLE_SECRET = 'GOOGLE_SECRET';
+const GOOGLE_REDIRECT_URL = 'GOOGLE_REDIRECT_URL';
 
 export interface IEnvConfig {
   [key: string]: any;
@@ -64,6 +67,14 @@ export class ConfigService {
 
       ...this.getDatabaseSettings(),
     };
+  }
+
+  getGooglePassportConfig(): IGooglePassportConfig {
+    return {
+      clientID: this.get<string>(GOOGLE_CLIENT_ID),
+      clientSecret: this.get<string>(GOOGLE_SECRET),
+      callbackURL: this.get<string>(GOOGLE_REDIRECT_URL),
+    }
   }
 
   getDatabaseSettings(): IDBConfig {

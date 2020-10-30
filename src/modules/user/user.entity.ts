@@ -9,6 +9,12 @@ export enum UserRole {
   businessOwner = 'businessOwner',
 }
 
+export enum AuthType {
+  web = 'web',
+  google = 'google',
+  facebook = 'facebook'
+}
+
 @Entity()
 export class User extends BaseEntity {
   static readonly userRoles = {
@@ -23,23 +29,30 @@ export class User extends BaseEntity {
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   firstName: string;
 
-  @Column()
+  @Column({ nullable: true })
   lastName: string;
 
-  @Column()
+  @Column({ nullable: true })
   phone: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Exclude()
   password: string;
 
   @Index()
-  @Column()
+  @Column({ nullable: true })
   mailConfirmationHashString: string;
 
+  @Index()
+  @Column({ nullable: true })
+  googleId: string;
+
   @Column({ default: false })
-  mailConfirmed: boolean;
+  emailConfirmed: boolean;
+
+  @Column('simple-enum', { enum: AuthType })
+  authType: AuthType;
 }

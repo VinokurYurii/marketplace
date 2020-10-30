@@ -5,7 +5,8 @@ import * as bcrypt from 'bcrypt';
 
 import { AuthorizeMessages } from '../../common/exception-messages';
 import { UserService } from '../user/user.service';
-import { User } from '../user/user.entity';
+import { IGoogleUser } from '../user/interfaces/IGoogleUser';
+import { User, AuthType } from '../user/user.entity';
 import { SignInDTO } from './dto/signInDTO'
 import { LogInDTO } from './dto/logInDTO'
 import { JwtPayload } from './dto/jwtPayload'
@@ -19,7 +20,7 @@ export class AuthService {
 
   async signIn(userDto: SignInDTO) {
     const { passwordConfirmation, ...userData } = userDto;
-    return this.userService.create(userData);
+    return this.userService.create(userData, AuthType.web);
   }
 
   async validateUser({ email, password }: LogInDTO): Promise<Partial<User> | any> {
@@ -29,11 +30,20 @@ export class AuthService {
       const match = await bcrypt.compare(password, user.password);
 
       if(match) {
-        const { password, ...userData } = user;
-        return userData;
+        return user;
       }
     }
     return null;
+  }
+
+  async logInGoogleUser(userData: IGoogleUser) {
+    const user = await this.userService.getOrCreateGoogleUser(userData);
+
+    if(!user) {
+      return null;
+    }
+
+    return this.getSignUserData(user);
   }
 
   async login(logInData: LogInDTO) {
@@ -43,6 +53,21 @@ export class AuthService {
       throw new UnauthorizedException(AuthorizeMessages.wrongEmailOrPassword);
     }
 
+    return this.getSignUserData(user);
+  }
+
+  googleLogin(req) {
+    if (!req.user) {
+      return 'No user from google'
+    }
+
+    return {
+      message: 'User information from google',
+      user: req.user
+    }
+  }
+
+  private getSignUserData(user: Partial<User>) {
     const payload: JwtPayload = { email: user.email, id: user.id };
 
     return {
