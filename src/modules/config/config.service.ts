@@ -6,10 +6,17 @@ import * as fs from 'fs';
 import * as dotenv from 'dotenv';
 
 import { PGConfigService } from './PGConfigService';
-import { IDBConfig } from './interfaces';
+import { IDBConfig, IGooglePassportConfig } from './interfaces';
+import { ExtractJwt } from "passport-jwt";
 
 const ext = path.extname(__filename);
 const dbDir = path.relative(process.cwd(), path.resolve(`${__dirname}/../../db`));
+
+const AUTH_JWT_TOKEN_EXPIRES_IN = 'AUTH_JWT_TOKEN_EXPIRES_IN';
+const AUTH_JWT_SECRET = 'AUTH_JWT_SECRET';
+const GOOGLE_CLIENT_ID = 'GOOGLE_CLIENT_ID';
+const GOOGLE_SECRET = 'GOOGLE_SECRET';
+const GOOGLE_REDIRECT_URL = 'GOOGLE_REDIRECT_URL';
 
 export interface IEnvConfig {
   [key: string]: any;
@@ -25,7 +32,7 @@ export class ConfigService {
   constructor() {
     ConfigService.serviceInstance = this;
 
-    let envFileName = `${ConfigService.DEFAULT_NODE_ENV}.env`;
+    let envFileName = `.${ConfigService.DEFAULT_NODE_ENV}.env`;
     if (!fs.existsSync(envFileName))
       envFileName = '.env';
     // const settings = dotenv.parse(fs.readFileSync(envFileName)); // TODO: Add env settings validations later
@@ -42,12 +49,11 @@ export class ConfigService {
     return ConfigService.serviceInstance;
   }
 
-  get<T = string>(key: string): T {
-    return this.envFileConfig[key];
+  get<T = string>(key: string, defaultValue?: any): T {
+    return this.envFileConfig[key] === undefined ? defaultValue : this.envFileConfig[key];
   }
 
   getOrmConfig() {
-    console.log('${dbDir}/**/*.entity${ext} => ', `${__dirname}/../**/*.entity${ext}`);
     return <TypeOrmModuleOptions>{
       dropSchema: false,
 
@@ -63,7 +69,23 @@ export class ConfigService {
     };
   }
 
+  getGooglePassportConfig(): IGooglePassportConfig {
+    return {
+      clientID: this.get<string>(GOOGLE_CLIENT_ID),
+      clientSecret: this.get<string>(GOOGLE_SECRET),
+      callbackURL: this.get<string>(GOOGLE_REDIRECT_URL),
+    }
+  }
+
   getDatabaseSettings(): IDBConfig {
     return this.dataBaseService.getConfig(this);
+  }
+
+  getAuthJwtTokenExpiresIn(): number {
+    return +this.get<number>(AUTH_JWT_TOKEN_EXPIRES_IN);
+  }
+
+  getAuthJwtSecret(): string {
+    return this.get<string>(AUTH_JWT_SECRET);
   }
 }

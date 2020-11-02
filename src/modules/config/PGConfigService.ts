@@ -13,6 +13,7 @@ const DATABASE_NAME = 'DATABASE_NAME';
 const DATABASE_USERNAME = 'DATABASE_USERNAME';
 const DATABASE_PASSWORD = 'DATABASE_PASSWORD';
 const DATABASE_SYNCHRONIZE = 'DATABASE_SYNCHRONIZE';
+const DATABASE_DROP_SCHEMA = 'DATABASE_DROP_SCHEMA';
 
 @Injectable()
 export class PGConfigService implements IConfig<IPgDBConfig> {
@@ -30,6 +31,7 @@ export class PGConfigService implements IConfig<IPgDBConfig> {
 
   getConfig(source: IPropertySource): IPgDBConfig {
     return {
+      keepConnectionAlive: true,
       type: 'postgres',
       port: source.get<number>(DATABASE_PORT),
       host: source.get(DATABASE_HOST),
@@ -37,6 +39,7 @@ export class PGConfigService implements IConfig<IPgDBConfig> {
       username: source.get(DATABASE_USERNAME),
       password: source.get(DATABASE_PASSWORD),
       synchronize: source.get<boolean>(DATABASE_SYNCHRONIZE),
+      dropDatabaseSchema: source.get<boolean>(DATABASE_DROP_SCHEMA, false),
     };
   }
 }
